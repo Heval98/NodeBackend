@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const authenticate = require('../authenticate');
+const cors = require('./cors');
 
 const Promos = require('../models/promotions');
 
@@ -10,7 +11,8 @@ const promoRouter = express.Router();
 promoRouter.use(bodyParser.json());
 
 promoRouter.route('/')
-.get((req,res,next) => {
+.options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
+.get(cors.cors, (req,res,next) => {
     Promos.find({})
     .then((promos) => {
         res.statusCode = 200;
@@ -19,7 +21,7 @@ promoRouter.route('/')
     }, (err) => next(err))
     .catch((err) => next(err));
 })
-.post(authenticate.verifyOrdinaryUser, authenticate.verifyAdmin, (req, res, next) => {
+.post(cors.corsWithOptions, authenticate.verifyOrdinaryUser, authenticate.verifyAdmin, (req, res, next) => {
     Promos.create(req.body)
     .then((promo) => {
         console.log('Promotion Created ', promo);
@@ -29,11 +31,11 @@ promoRouter.route('/')
     }, (err) => next(err))
     .catch((err) => next(err));
 })
-.put(authenticate.verifyOrdinaryUser, authenticate.verifyAdmin, (req, res, next) => {
+.put(cors.corsWithOptions, authenticate.verifyOrdinaryUser, authenticate.verifyAdmin, (req, res, next) => {
     res.statusCode = 403;
     res.end('PUT operation not supported on /promotions');
 })
-.delete(authenticate.verifyOrdinaryUser, authenticate.verifyAdmin, (req, res, next) => {
+.delete(cors.corsWithOptions, authenticate.verifyOrdinaryUser, authenticate.verifyAdmin, (req, res, next) => {
     Promos.remove({})
     .then((resp) => {
         res.statusCode = 200;
@@ -44,7 +46,8 @@ promoRouter.route('/')
 });
 
 promoRouter.route('/:promotionId')
-.get((req,res,next) => {
+.options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
+.get(cors.cors, (req,res,next) => {
     Promos.findById(req.params.promotionId)
     .then((promo) => {
         res.statusCode = 200;
@@ -53,11 +56,11 @@ promoRouter.route('/:promotionId')
     }, (err) => next(err))
     .catch((err) => next(err));
 })
-.post(authenticate.verifyOrdinaryUser, authenticate.verifyAdmin, (req, res, next) => {
+.post(cors.corsWithOptions, authenticate.verifyOrdinaryUser, authenticate.verifyAdmin, (req, res, next) => {
     res.statusCode = 403;
     res.end('POST operation not supported on /promotions/'+ req.params.promotionId);
 })
-.put(authenticate.verifyOrdinaryUser, authenticate.verifyAdmin, (req, res, next) => {
+.put(cors.corsWithOptions, authenticate.verifyOrdinaryUser, authenticate.verifyAdmin, (req, res, next) => {
     Promos.findByIdAndUpdate(req.params.promotionId, {
         $set: req.body
     }, { new: true })
@@ -68,7 +71,7 @@ promoRouter.route('/:promotionId')
     }, (err) => next(err))
     .catch((err) => next(err));
 })
-.delete(authenticate.verifyOrdinaryUser, authenticate.verifyAdmin, (req, res, next) => {
+.delete(cors.corsWithOptions, authenticate.verifyOrdinaryUser, authenticate.verifyAdmin, (req, res, next) => {
     Promos.findByIdAndRemove(req.params.promotionId)
     .then((resp) => {
         res.statusCode = 200;
