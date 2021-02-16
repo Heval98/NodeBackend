@@ -77,7 +77,7 @@ exports.facebookPassport = passport.use(new FacebookTokenStrategy({
 ));
 
 
-//Other metgid to send token without bearer
+//Other method to send token without bearer
 
 // exports.verifyOrdinaryUser = function (req, res, next) {
 //     // check header or url parameters or post parameters for token
